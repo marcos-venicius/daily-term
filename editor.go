@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"strings"
 
 	"github.com/nsf/termbox-go"
 )
@@ -21,15 +21,9 @@ type Editor struct {
 }
 
 func CreateEditor() *Editor {
-	err := termbox.Init()
+	windowWidth, windowHeight := termbox.Size()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-  windowWidth, windowHeight := termbox.Size()
-
-	var termbox_event chan termbox.Event = make(chan termbox.Event, 20)
+	var termbox_event chan termbox.Event = make(chan termbox.Event, 1)
 
 	termbox.SetInputMode(termbox.InputEsc)
 
@@ -37,7 +31,7 @@ func CreateEditor() *Editor {
 		mode:          EDITOR_MODE_NORMAL,
 		termbox_event: termbox_event,
 		running:       true,
-    commandInput: CreateInput(windowWidth, 1, 0, windowHeight - 1),
+		commandInput:  CreateInput(windowWidth, 1, 0, windowHeight-1),
 	}
 
 	go func() {
@@ -49,6 +43,11 @@ func CreateEditor() *Editor {
 	editor.listenEvents()
 
 	return editor
+}
+
+func (editor *Editor) Stop() {
+	editor.running = false
+	termbox.Interrupt()
 }
 
 func (editor *Editor) SetNormalMode() {
@@ -82,6 +81,10 @@ func (mode *EditorMode) Display() {
 }
 
 func (editor *Editor) listenNormalModeEvents() {
+	if !editor.running {
+		return
+	}
+
 	event := <-editor.termbox_event
 
 	if event.Type != termbox.EventKey {
@@ -102,6 +105,10 @@ func (editor *Editor) listenNormalModeEvents() {
 }
 
 func (editor *Editor) listenCommandModeEvents() {
+	if !editor.running {
+		return
+	}
+
 	event := <-editor.termbox_event
 
 	if event.Type != termbox.EventKey {
@@ -109,7 +116,7 @@ func (editor *Editor) listenCommandModeEvents() {
 	}
 
 	if event.Key == termbox.KeyEsc {
-    editor.commandInput.Reset()
+		editor.commandInput.Reset()
 		editor.SetNormalMode()
 	}
 }
@@ -124,4 +131,16 @@ func (editor *Editor) listenEvents() {
 			}
 		}
 	}()
+}
+
+func (editor *Editor) exec(command string) {
+	editor.SetNormalMode()
+
+	switch strings.TrimSpace(command) {
+	case "q", "quit":
+		editor.Stop()
+		return
+	default:
+		return
+	}
 }

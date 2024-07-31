@@ -168,7 +168,7 @@ func (input *Input) Reset() {
 
 func (input *Input) startListeningEvents(editor *Editor) {
 	go func() {
-		for editor.mode.IsCommand() {
+		for editor.mode.IsCommand() && editor.running {
 			event := termbox.PollEvent()
 
 			switch event.Type {
@@ -195,7 +195,9 @@ func (input *Input) startListeningEvents(editor *Editor) {
 				case termbox.KeyEnd, termbox.KeyCtrlE:
 					input.MoveCursorToEndOfTheLine()
 				case termbox.KeyEnter:
+          command := string(input.text)
           input.Reset()
+          editor.exec(command)
 					return
 				default:
 					if event.Ch != 0 {
