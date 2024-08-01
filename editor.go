@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/marcos-venicius/daily-term/taskmanagement"
 	"github.com/nsf/termbox-go"
 )
 
@@ -21,8 +23,10 @@ type Editor struct {
 	commandInput   *Input
 	argumentParser *argumentparser.ArgumentParser
 	errorMessage   string
+	infoMessage    string
 	width          int
 	height         int
+	board          *taskmanagement.Board
 }
 
 func CreateEditor() *Editor {
@@ -33,6 +37,7 @@ func CreateEditor() *Editor {
 	termbox.SetInputMode(termbox.InputEsc)
 
 	argumentParser := argumentparser.CreateArgumentParser()
+	board := taskmanagement.CreateBoard()
 
 	editor := &Editor{
 		mode:           NormalMode,
@@ -40,6 +45,7 @@ func CreateEditor() *Editor {
 		running:        true,
 		commandInput:   CreateInput(windowWidth, 1, 0, windowHeight-1),
 		argumentParser: argumentParser,
+		board:          board,
 		width:          windowWidth,
 		height:         windowHeight,
 	}
@@ -98,6 +104,12 @@ func (editor *Editor) DisplayError() {
 	}
 }
 
+func (editor *Editor) DisplayInfo() {
+	if editor.infoMessage != "" && editor.mode.IsNormal() {
+		tbprint(0, editor.height-1, termbox.ColorWhite, termbox.ColorDefault, editor.infoMessage)
+	}
+}
+
 func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 	if !editor.running {
 		return
@@ -109,6 +121,10 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 
 	if len(editor.errorMessage) > 0 && event.Key == termbox.KeyEsc {
 		editor.errorMessage = ""
+	}
+
+	if len(editor.infoMessage) > 0 {
+		editor.infoMessage = ""
 	}
 
 	switch event.Ch {
@@ -154,7 +170,13 @@ func (editor *Editor) listenEvents() {
 }
 
 func (editor *Editor) SetErrorMessage(message string) {
+	editor.infoMessage = ""
 	editor.errorMessage = message
+}
+
+func (editor *Editor) SetInfoMessage(message string) {
+	editor.errorMessage = ""
+	editor.infoMessage = message
 }
 
 func (editor *Editor) exec(command string) {
@@ -168,8 +190,11 @@ func (editor *Editor) exec(command string) {
 	}
 
 	switch cmd.Name {
-	case "q", "quit":
+	case "quit":
 		editor.Stop()
+		return
+	case "new task":
+		editor.addTask(cmd.Arguments)
 		return
 	default:
 		editor.SetErrorMessage(fmt.Sprintf(`Unhandled command "%v"`, cmd.Name))

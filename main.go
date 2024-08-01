@@ -21,7 +21,6 @@ func main() {
 	defer close(editor.termbox_event)
 
 	editor.argumentParser.AddCommand("quit")
-	editor.argumentParser.AddCommand("q")
 	editor.argumentParser.AddCommand(
 		"new task",
 		argumentparser.CommandArgumentSyntax{
@@ -43,6 +42,7 @@ func main() {
 		}
 
 		editor.DisplayError()
+		editor.DisplayInfo()
 
 		termbox.Flush()
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)

@@ -17,6 +17,6 @@ https://github.com/user-attachments/assets/53b2be7f-037c-4b24-806c-c324c0691964
 
 ## COMMAND mode commands
 
-- `q` quit
 - `quit` quit
+- `new task "<task name>"` create a new task
 - <kbd>Esc</kbd> go back to `NORMAL` mode
