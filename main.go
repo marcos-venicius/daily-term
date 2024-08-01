@@ -16,6 +16,8 @@ func main() {
 
 	editor := CreateEditor()
 
+	defer close(editor.termbox_event)
+
 	termbox.Flush()
 
 	for editor.running {

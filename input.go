@@ -195,9 +195,9 @@ func (input *Input) startListeningEvents(editor *Editor) {
 				case termbox.KeyEnd, termbox.KeyCtrlE:
 					input.MoveCursorToEndOfTheLine()
 				case termbox.KeyEnter:
-          command := string(input.text)
-          input.Reset()
-          editor.exec(command)
+					command := string(input.text)
+					input.Reset()
+					editor.exec(command)
 					return
 				default:
 					if event.Ch != 0 {
