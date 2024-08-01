@@ -1,8 +1,9 @@
 package main
 
 import (
-	"strings"
+	"fmt"
 
+	argParser "github.com/marcos-venicius/daily-term/argument-parser"
 	"github.com/nsf/termbox-go"
 )
 
@@ -14,10 +15,14 @@ const (
 type EditorMode int
 
 type Editor struct {
-	mode          EditorMode // current editor mode (default is Normal Mode)
-	termbox_event chan termbox.Event
-	running       bool
-	commandInput  *Input
+	mode           EditorMode // current editor mode (default is Normal Mode)
+	termbox_event  chan termbox.Event
+	running        bool
+	commandInput   *Input
+	argumentParser *argParser.ArgumentParser
+	errorMessage   string
+	width          int
+	height         int
 }
 
 func CreateEditor() *Editor {
@@ -28,10 +33,13 @@ func CreateEditor() *Editor {
 	termbox.SetInputMode(termbox.InputEsc)
 
 	editor := &Editor{
-		mode:          EDITOR_MODE_NORMAL,
-		termbox_event: termbox_event,
-		running:       true,
-		commandInput:  CreateInput(windowWidth, 1, 0, windowHeight-1),
+		mode:           EDITOR_MODE_NORMAL,
+		termbox_event:  termbox_event,
+		running:        true,
+		commandInput:   CreateInput(windowWidth, 1, 0, windowHeight-1),
+		argumentParser: argParser.CreateArgumentParser(),
+		width:          windowWidth,
+		height:         windowHeight,
 	}
 
 	go func() {
@@ -69,14 +77,22 @@ func (mode *EditorMode) IsCommand() bool {
 func (mode *EditorMode) Display() {
 	switch *mode {
 	case EDITOR_MODE_NORMAL:
-		tbprint(0, 0, termbox.ColorRed, termbox.ColorDefault, "NORMAL")
+		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "NORMAL")
 		break
 	case EDITOR_MODE_COMMAND:
-		tbprint(0, 0, termbox.ColorRed, termbox.ColorDefault, "COMMAND")
+		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "COMMAND")
 		break
 	default:
-		tbprint(0, 0, termbox.ColorRed, termbox.ColorDefault, "UNKNOWN")
+		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "UNKNOWN")
 		break
+	}
+}
+
+func (editor *Editor) DisplayError() {
+	if editor.errorMessage != "" && editor.mode.IsNormal() {
+		errorMessage := fmt.Sprintf("ERROR: %v", editor.errorMessage)
+
+		tbprint(0, editor.height-1, termbox.ColorRed, termbox.ColorDefault, errorMessage)
 	}
 }
 
@@ -89,6 +105,10 @@ func (editor *Editor) listenNormalModeEvents() {
 
 	if event.Type != termbox.EventKey {
 		return
+	}
+
+	if len(editor.errorMessage) > 0 && event.Key == termbox.KeyEsc {
+		editor.errorMessage = ""
 	}
 
 	switch event.Ch {
@@ -136,7 +156,14 @@ func (editor *Editor) listenEvents() {
 func (editor *Editor) exec(command string) {
 	editor.SetNormalMode()
 
-	switch strings.TrimSpace(command) {
+	cmd, err := editor.argumentParser.ParseFromString(command)
+
+	if err != nil {
+		editor.errorMessage = err.Error()
+		return
+	}
+
+	switch cmd.Name {
 	case "q", "quit":
 		editor.Stop()
 		return

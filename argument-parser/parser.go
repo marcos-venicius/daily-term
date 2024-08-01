@@ -37,19 +37,19 @@ type Command struct {
 	Arguments []CommandArgument
 }
 
-type Cmd struct {
+type ArgumentParser struct {
 	commands    []CommandSyntax
 	closed      bool
 	commandsMap map[string]*CommandSyntax
 }
 
-func CreateCmd() *Cmd {
-	return &Cmd{
+func CreateArgumentParser() *ArgumentParser {
+	return &ArgumentParser{
 		commands: []CommandSyntax{},
 	}
 }
 
-func (cmd *Cmd) AddCommand(name string, arguments ...CommandArgumentSyntax) error {
+func (cmd *ArgumentParser) AddCommand(name string, arguments ...CommandArgumentSyntax) error {
 	if cmd.closed {
 		return errors.New("You cannot add commands after calling Finish method")
 	}
@@ -79,7 +79,7 @@ func (cmd *Cmd) AddCommand(name string, arguments ...CommandArgumentSyntax) erro
 	return nil
 }
 
-func (cmd *Cmd) Finish() error {
+func (cmd *ArgumentParser) Finish() error {
 	if cmd.closed {
 		return errors.New("You cannot call Finish more than once")
 	}
@@ -192,9 +192,9 @@ func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgumen
 	return arguments, nil
 }
 
-func (cmd *Cmd) ParseFromString(text string) (*Command, error) {
+func (cmd *ArgumentParser) ParseFromString(text string) (*Command, error) {
 	if !cmd.closed {
-		return nil, errors.New("You cannot parse a command before finish the Cmd")
+		return nil, errors.New("You cannot parse a command before finish the ArgumentParser")
 	}
 
 	text = strings.TrimSpace(text)

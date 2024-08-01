@@ -18,6 +18,11 @@ func main() {
 
 	defer close(editor.termbox_event)
 
+	editor.argumentParser.AddCommand("quit")
+	editor.argumentParser.AddCommand("q")
+
+	editor.argumentParser.Finish()
+
 	termbox.Flush()
 
 	for editor.running {
@@ -26,6 +31,8 @@ func main() {
 		if editor.mode.IsCommand() {
 			editor.commandInput.Draw()
 		}
+
+		editor.DisplayError()
 
 		termbox.Flush()
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)

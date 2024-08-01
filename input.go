@@ -149,7 +149,7 @@ func (input *Input) CursorX() int {
 }
 
 func (input *Input) Draw() {
-	fill(input.x, input.y-1, input.width, 1, termbox.Cell{Ch: '─', Fg: termbox.ColorRed})
+	fill(input.x, input.y-1, input.width, 1, termbox.Cell{Ch: '─', Fg: termbox.ColorWhite})
 
 	input.drawInput(input.x, input.y, input.width, input.height)
 
@@ -195,7 +195,7 @@ func (input *Input) startListeningEvents(editor *Editor) {
 				case termbox.KeyEnd, termbox.KeyCtrlE:
 					input.MoveCursorToEndOfTheLine()
 				case termbox.KeyEnter:
-          termbox.Interrupt()
+					termbox.Interrupt()
 					command := string(input.text)
 					input.Reset()
 					editor.exec(command)
@@ -214,7 +214,7 @@ func (input *Input) drawInput(x, y, w, h int) {
 	input.AdjustVOffset(w)
 
 	const coldef = termbox.ColorDefault
-	const colred = termbox.ColorRed
+	const colwhite = termbox.ColorWhite
 
 	fill(x, y, w, h, termbox.Cell{Ch: ' '})
 
@@ -234,7 +234,7 @@ func (input *Input) drawInput(x, y, w, h int) {
 		}
 
 		if rx >= w {
-			termbox.SetCell(x+w-1, y, arrowRight, colred, coldef)
+			termbox.SetCell(x+w-1, y, arrowRight, colwhite, coldef)
 			break
 		}
 
@@ -263,6 +263,6 @@ func (input *Input) drawInput(x, y, w, h int) {
 	}
 
 	if input.line_voffset != 0 {
-		termbox.SetCell(x, y, arrowLeft, colred, coldef)
+		termbox.SetCell(x, y, arrowLeft, colwhite, coldef)
 	}
 }

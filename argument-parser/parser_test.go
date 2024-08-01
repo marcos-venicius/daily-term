@@ -6,7 +6,7 @@ import (
 )
 
 func TestAddCommandWithEmptyArguments(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand("new task")
 
@@ -16,7 +16,7 @@ func TestAddCommandWithEmptyArguments(t *testing.T) {
 }
 
 func TestAddCommandWithArguments(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	err := cmd.AddCommand("new task",
 		CommandArgumentSyntax{
@@ -50,7 +50,7 @@ func TestAddCommandWithArguments(t *testing.T) {
 }
 
 func TestAddCommandWithInvalidArgumentTypes(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	err := cmd.AddCommand("new task",
 		CommandArgumentSyntax{
@@ -79,7 +79,7 @@ func TestAddCommandWithInvalidArgumentTypes(t *testing.T) {
 }
 
 func TestAddCommandWithInvalidOptionalArguments(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	err := cmd.AddCommand("new task",
 		CommandArgumentSyntax{
@@ -108,7 +108,7 @@ func TestAddCommandWithInvalidOptionalArguments(t *testing.T) {
 }
 
 func TestAddCommandAfterCallingFinish(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	err := cmd.AddCommand("new task",
 		CommandArgumentSyntax{
@@ -146,7 +146,7 @@ func TestAddCommandAfterCallingFinish(t *testing.T) {
 }
 
 func TestCallingFinishTwice(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	err := cmd.Finish()
 
@@ -162,19 +162,19 @@ func TestCallingFinishTwice(t *testing.T) {
 }
 
 func TestParseFromStringBeforeFinish(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	_, err := cmd.ParseFromString("anything")
 
 	if err == nil {
-		t.Fatalf("Expected: \"%v\", Received: nil", "You cannot parse a command before finish the Cmd")
-	} else if err.Error() != "You cannot parse a command before finish the Cmd" {
-		t.Fatalf("Expected: \"%v\", Received: \"%v\"", "You cannot parse a command before finish the Cmd", err.Error())
+		t.Fatalf("Expected: \"%v\", Received: nil", "You cannot parse a command before finish the ArgumentParser")
+	} else if err.Error() != "You cannot parse a command before finish the ArgumentParser" {
+		t.Fatalf("Expected: \"%v\", Received: \"%v\"", "You cannot parse a command before finish the ArgumentParser", err.Error())
 	}
 }
 
 func TestParseFromStringWhenHavingInvalidCommand(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.Finish()
 
@@ -190,7 +190,7 @@ func TestParseFromStringWhenHavingInvalidCommand(t *testing.T) {
 }
 
 func TestParseFromStringWhenHavingValidCommandWithNoArguments(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand("new task")
 
@@ -212,7 +212,7 @@ func TestParseFromStringWhenHavingValidCommandWithNoArguments(t *testing.T) {
 }
 
 func TestParseFromStringWhenHasRequiredArgumentsNonProvided(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"delete task",
@@ -237,7 +237,7 @@ func TestParseFromStringWhenHasRequiredArgumentsNonProvided(t *testing.T) {
 }
 
 func TestParseFromStringWhenHavingValidCommandWithBadIntArgument(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"delete task",
@@ -262,7 +262,7 @@ func TestParseFromStringWhenHavingValidCommandWithBadIntArgument(t *testing.T) {
 }
 
 func TestParseFromStringWhenHavingValidCommandWithValidIntArgument(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"delete task",
@@ -287,7 +287,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidIntArgument(t *testing.T)
 }
 
 func TestParseFromStringWhenHavingValidCommandWithInvalidStringArgument(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"new task",
@@ -312,7 +312,7 @@ func TestParseFromStringWhenHavingValidCommandWithInvalidStringArgument(t *testi
 }
 
 func TestParseFromStringWhenHavingValidCommandWithValidStringWithoutQuotes(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"new task",
@@ -339,7 +339,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidStringWithoutQuotes(t *te
 }
 
 func TestParseFromStringWhenHavingValidCommandWithValidTwoStringWithoutQuotes(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"new task",
@@ -377,7 +377,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidTwoStringWithoutQuotes(t 
 }
 
 func TestParseFromStringWhenHavingValidCommandWithValidStringWithQuotes(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"new task",
@@ -404,7 +404,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidStringWithQuotes(t *testi
 }
 
 func TestParseFromStringWhenHavingValidCommandWithInvalidBooleanType(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"set completed",
@@ -429,7 +429,7 @@ func TestParseFromStringWhenHavingValidCommandWithInvalidBooleanType(t *testing.
 }
 
 func TestParseFromStringWhenHavingValidCommandWithValidBooleanType(t *testing.T) {
-	cmd := CreateCmd()
+	cmd := CreateArgumentParser()
 
 	cmd.AddCommand(
 		"set completed",
