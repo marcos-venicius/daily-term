@@ -23,7 +23,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 
 func rune_advance_len(r rune, pos int) int {
 	if r == '\t' {
-		return TABSTOP_LENGTH - pos%TABSTOP_LENGTH
+		return defaultTabstopLength - pos%defaultTabstopLength
 	}
 
 	return runewidth.RuneWidth(r)

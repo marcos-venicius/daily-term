@@ -1,4 +1,4 @@
-package cmd
+package argumentparser
 
 import (
 	"errors"
@@ -9,10 +9,11 @@ import (
 
 type CommandArgumentType int
 
+// These are all type available in the parser
 const (
-	COMMAND_ARGUMENT_TYPE_INT  CommandArgumentType = iota
-	COMMAND_ARGUMENT_TYPE_STR  CommandArgumentType = iota
-	COMMAND_ARGUMENT_TYPE_BOOL CommandArgumentType = iota
+	IntArgumentType     CommandArgumentType = iota
+	StringArgumentType  CommandArgumentType = iota
+	BooleanArgumentType CommandArgumentType = iota
 )
 
 type CommandArgumentSyntax struct {
@@ -58,7 +59,7 @@ func (cmd *ArgumentParser) AddCommand(name string, arguments ...CommandArgumentS
 
 	for _, argument := range arguments {
 		switch argument.Type {
-		case COMMAND_ARGUMENT_TYPE_INT, COMMAND_ARGUMENT_TYPE_STR, COMMAND_ARGUMENT_TYPE_BOOL:
+		case IntArgumentType, StringArgumentType, BooleanArgumentType:
 			break
 		default:
 			return errors.New(fmt.Sprintf("Argument \"%v\" have a invalid type \"%d\"", argument.Name, argument.Type))
@@ -158,10 +159,10 @@ func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgumen
 		}
 
 		switch arg.Type {
-		case COMMAND_ARGUMENT_TYPE_STR:
+		case StringArgumentType:
 			commandArgument.Value = argument
 			break
-		case COMMAND_ARGUMENT_TYPE_INT:
+		case IntArgumentType:
 			v, err := strconv.Atoi(argument)
 
 			if err != nil {
@@ -170,7 +171,7 @@ func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgumen
 
 			commandArgument.Value = v
 			break
-		case COMMAND_ARGUMENT_TYPE_BOOL:
+		case BooleanArgumentType:
 			switch argument {
 			case "true", "1", "t", "yes", "yeah", "y":
 				commandArgument.Value = true

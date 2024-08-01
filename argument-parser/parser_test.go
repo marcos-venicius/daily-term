@@ -1,4 +1,4 @@
-package cmd
+package argumentparser
 
 import (
 	"fmt"
@@ -22,17 +22,17 @@ func TestAddCommandWithArguments(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "Task name",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 		CommandArgumentSyntax{
 			Name:     "Task state",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_STR,
+			Type:     StringArgumentType,
 		},
 		CommandArgumentSyntax{
 			Name:     "Task owner",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_BOOL,
+			Type:     BooleanArgumentType,
 		},
 	)
 
@@ -56,7 +56,7 @@ func TestAddCommandWithInvalidArgumentTypes(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "Task name",
 			Required: false,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 		CommandArgumentSyntax{
 			Name:     "Task state",
@@ -85,12 +85,12 @@ func TestAddCommandWithInvalidOptionalArguments(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "Task name",
 			Required: false,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 		CommandArgumentSyntax{
 			Name:     "Task state",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 	)
 
@@ -114,7 +114,7 @@ func TestAddCommandAfterCallingFinish(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "Task name",
 			Required: false,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 	)
 
@@ -132,7 +132,7 @@ func TestAddCommandAfterCallingFinish(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "Task name",
 			Required: false,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 	)
 
@@ -219,7 +219,7 @@ func TestParseFromStringWhenHasRequiredArgumentsNonProvided(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "task id (int)",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 	)
 
@@ -244,7 +244,7 @@ func TestParseFromStringWhenHavingValidCommandWithBadIntArgument(t *testing.T) {
 		CommandArgumentSyntax{
 			Name:     "task id (int)",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 	)
 
@@ -269,7 +269,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidIntArgument(t *testing.T)
 		CommandArgumentSyntax{
 			Name:     "task id (int)",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_INT,
+			Type:     IntArgumentType,
 		},
 	)
 
@@ -294,7 +294,7 @@ func TestParseFromStringWhenHavingValidCommandWithInvalidStringArgument(t *testi
 		CommandArgumentSyntax{
 			Name:     "task name",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_STR,
+			Type:     StringArgumentType,
 		},
 	)
 
@@ -319,7 +319,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidStringWithoutQuotes(t *te
 		CommandArgumentSyntax{
 			Name:     "task name",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_STR,
+			Type:     StringArgumentType,
 		},
 	)
 
@@ -346,12 +346,12 @@ func TestParseFromStringWhenHavingValidCommandWithValidTwoStringWithoutQuotes(t 
 		CommandArgumentSyntax{
 			Name:     "task name",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_STR,
+			Type:     StringArgumentType,
 		},
 		CommandArgumentSyntax{
 			Name:     "task description",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_STR,
+			Type:     StringArgumentType,
 		},
 	)
 
@@ -384,7 +384,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidStringWithQuotes(t *testi
 		CommandArgumentSyntax{
 			Name:     "task name",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_STR,
+			Type:     StringArgumentType,
 		},
 	)
 
@@ -411,7 +411,7 @@ func TestParseFromStringWhenHavingValidCommandWithInvalidBooleanType(t *testing.
 		CommandArgumentSyntax{
 			Name:     "state (boolean)",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_BOOL,
+			Type:     BooleanArgumentType,
 		},
 	)
 
@@ -436,7 +436,7 @@ func TestParseFromStringWhenHavingValidCommandWithValidBooleanType(t *testing.T)
 		CommandArgumentSyntax{
 			Name:     "state (boolean)",
 			Required: true,
-			Type:     COMMAND_ARGUMENT_TYPE_BOOL,
+			Type:     BooleanArgumentType,
 		},
 	)
 

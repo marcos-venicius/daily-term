@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	PREFERED_HORIZONTAL_THRESHOLD = 5
-	TABSTOP_LENGTH                = 8
+	preferedHorizontalThreshold = 5
+	defaultTabstopLength        = 8
 )
 
 var arrowLeft = '←'
@@ -39,7 +39,7 @@ func CreateInput(width, height, x, y int) *Input {
 }
 
 func (input *Input) AdjustVOffset(width int) {
-	ht := PREFERED_HORIZONTAL_THRESHOLD
+	ht := preferedHorizontalThreshold
 
 	max_h_threshold := (width - 1) / 2
 
@@ -213,8 +213,8 @@ func (input *Input) startListeningEvents(editor *Editor) {
 func (input *Input) drawInput(x, y, w, h int) {
 	input.AdjustVOffset(w)
 
-	const coldef = termbox.ColorDefault
-	const colwhite = termbox.ColorWhite
+	const defaultColor = termbox.ColorDefault
+	const primaryColor = termbox.ColorWhite
 
 	fill(x, y, w, h, termbox.Cell{Ch: ' '})
 
@@ -230,11 +230,11 @@ func (input *Input) drawInput(x, y, w, h int) {
 		}
 
 		if lx == tabstop {
-			tabstop += TABSTOP_LENGTH
+			tabstop += defaultTabstopLength
 		}
 
 		if rx >= w {
-			termbox.SetCell(x+w-1, y, arrowRight, colwhite, coldef)
+			termbox.SetCell(x+w-1, y, arrowRight, primaryColor, defaultColor)
 			break
 		}
 
@@ -249,12 +249,12 @@ func (input *Input) drawInput(x, y, w, h int) {
 				}
 
 				if rx >= 0 {
-					termbox.SetCell(x+rx, y, ' ', coldef, coldef)
+					termbox.SetCell(x+rx, y, ' ', defaultColor, defaultColor)
 				}
 			}
 		} else {
 			if rx >= 0 {
-				termbox.SetCell(x+rx, y, r, coldef, coldef)
+				termbox.SetCell(x+rx, y, r, defaultColor, defaultColor)
 			}
 			lx += runewidth.RuneWidth(r)
 		}
@@ -263,6 +263,6 @@ func (input *Input) drawInput(x, y, w, h int) {
 	}
 
 	if input.line_voffset != 0 {
-		termbox.SetCell(x, y, arrowLeft, colwhite, coldef)
+		termbox.SetCell(x, y, arrowLeft, primaryColor, defaultColor)
 	}
 }

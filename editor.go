@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-
-	argParser "github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/marcos-venicius/daily-term/argument-parser"
 	"github.com/nsf/termbox-go"
 )
 
+// These are all the modes available in the application
 const (
-	EDITOR_MODE_NORMAL  EditorMode = iota // when the user wants to be able to select another editor mode
-	EDITOR_MODE_COMMAND EditorMode = iota // when the user wants execute some command like quit (q)
+	NormalMode  EditorMode = iota // when the user wants to be able to select another editor mode
+	CommandMode EditorMode = iota // when the user wants execute some command like quit (q)
 )
 
 type EditorMode int
@@ -19,7 +19,7 @@ type Editor struct {
 	termbox_event  chan termbox.Event
 	running        bool
 	commandInput   *Input
-	argumentParser *argParser.ArgumentParser
+	argumentParser *argumentparser.ArgumentParser
 	errorMessage   string
 	width          int
 	height         int
@@ -32,12 +32,14 @@ func CreateEditor() *Editor {
 
 	termbox.SetInputMode(termbox.InputEsc)
 
+	argumentParser := argumentparser.CreateArgumentParser()
+
 	editor := &Editor{
-		mode:           EDITOR_MODE_NORMAL,
+		mode:           NormalMode,
 		termbox_event:  termbox_event,
 		running:        true,
 		commandInput:   CreateInput(windowWidth, 1, 0, windowHeight-1),
-		argumentParser: argParser.CreateArgumentParser(),
+		argumentParser: argumentParser,
 		width:          windowWidth,
 		height:         windowHeight,
 	}
@@ -59,27 +61,27 @@ func (editor *Editor) Stop() {
 }
 
 func (editor *Editor) SetNormalMode() {
-	editor.mode = EDITOR_MODE_NORMAL
+	editor.mode = NormalMode
 }
 
 func (editor *Editor) SetCommandMode() {
-	editor.mode = EDITOR_MODE_COMMAND
+	editor.mode = CommandMode
 }
 
 func (mode *EditorMode) IsNormal() bool {
-	return *mode == EDITOR_MODE_NORMAL
+	return *mode == NormalMode
 }
 
 func (mode *EditorMode) IsCommand() bool {
-	return *mode == EDITOR_MODE_COMMAND
+	return *mode == CommandMode
 }
 
 func (mode *EditorMode) Display() {
 	switch *mode {
-	case EDITOR_MODE_NORMAL:
+	case NormalMode:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "NORMAL")
 		break
-	case EDITOR_MODE_COMMAND:
+	case CommandMode:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "COMMAND")
 		break
 	default:
@@ -96,12 +98,10 @@ func (editor *Editor) DisplayError() {
 	}
 }
 
-func (editor *Editor) listenNormalModeEvents() {
+func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 	if !editor.running {
 		return
 	}
-
-	event := <-editor.termbox_event
 
 	if event.Type != termbox.EventKey {
 		return
@@ -124,12 +124,10 @@ func (editor *Editor) listenNormalModeEvents() {
 	}
 }
 
-func (editor *Editor) listenCommandModeEvents() {
+func (editor *Editor) listenCommandModeEvents(event termbox.Event) {
 	if !editor.running {
 		return
 	}
-
-	event := <-editor.termbox_event
 
 	if event.Type != termbox.EventKey {
 		return
@@ -144,10 +142,12 @@ func (editor *Editor) listenCommandModeEvents() {
 func (editor *Editor) listenEvents() {
 	go func() {
 		for editor.running {
+			event := <-editor.termbox_event
+
 			if editor.mode.IsNormal() {
-				editor.listenNormalModeEvents()
+				editor.listenNormalModeEvents(event)
 			} else if editor.mode.IsCommand() {
-				editor.listenCommandModeEvents()
+				editor.listenCommandModeEvents(event)
 			}
 		}
 	}()

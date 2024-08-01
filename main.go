@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/nsf/termbox-go"
 	"log"
+
+	"github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/nsf/termbox-go"
 )
 
 func main() {
@@ -20,6 +22,14 @@ func main() {
 
 	editor.argumentParser.AddCommand("quit")
 	editor.argumentParser.AddCommand("q")
+	editor.argumentParser.AddCommand(
+		"new task",
+		argumentparser.CommandArgumentSyntax{
+			Name:     "Task name (string)",
+			Required: true,
+			Type:     argumentparser.StringArgumentType,
+		},
+	)
 
 	editor.argumentParser.Finish()
 
