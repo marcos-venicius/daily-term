@@ -153,13 +153,17 @@ func (editor *Editor) listenEvents() {
 	}()
 }
 
+func (editor *Editor) SetErrorMessage(message string) {
+	editor.errorMessage = message
+}
+
 func (editor *Editor) exec(command string) {
 	editor.SetNormalMode()
 
 	cmd, err := editor.argumentParser.ParseFromString(command)
 
 	if err != nil {
-		editor.errorMessage = err.Error()
+		editor.SetErrorMessage(err.Error())
 		return
 	}
 
@@ -168,6 +172,7 @@ func (editor *Editor) exec(command string) {
 		editor.Stop()
 		return
 	default:
+		editor.SetErrorMessage(fmt.Sprintf(`Unhandled command "%v"`, cmd.Name))
 		return
 	}
 }
