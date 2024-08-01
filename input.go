@@ -195,6 +195,7 @@ func (input *Input) startListeningEvents(editor *Editor) {
 				case termbox.KeyEnd, termbox.KeyCtrlE:
 					input.MoveCursorToEndOfTheLine()
 				case termbox.KeyEnter:
+          termbox.Interrupt()
 					command := string(input.text)
 					input.Reset()
 					editor.exec(command)
