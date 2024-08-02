@@ -27,12 +27,13 @@ type Editor struct {
 	width          int
 	height         int
 	board          *taskmanagement.Board
+	fps            float64
 }
 
 func CreateEditor() *Editor {
 	windowWidth, windowHeight := termbox.Size()
 
-	var termbox_event chan termbox.Event = make(chan termbox.Event, 1)
+	var termbox_event chan termbox.Event = make(chan termbox.Event, 20)
 
 	termbox.SetInputMode(termbox.InputEsc)
 
@@ -48,6 +49,7 @@ func CreateEditor() *Editor {
 		board:          board,
 		width:          windowWidth,
 		height:         windowHeight,
+		fps:            50,
 	}
 
 	go func() {
@@ -93,6 +95,25 @@ func (mode *EditorMode) Display() {
 	default:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "UNKNOWN")
 		break
+	}
+}
+
+func (editor *Editor) Display() {
+	for id, task := range editor.board.Tasks() {
+		text := fmt.Sprintf("  [%02d] %v", id, task.Name)
+
+		color := termbox.ColorWhite
+
+		switch task.State {
+		case taskmanagement.InProgress:
+			color = termbox.ColorYellow
+			break
+		case taskmanagement.Done:
+			color = termbox.ColorGreen
+			break
+		}
+
+		tbprint(0, 2+id, color, termbox.ColorDefault, text)
 	}
 }
 

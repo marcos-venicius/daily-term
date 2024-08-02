@@ -1,6 +1,9 @@
 package taskmanagement
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 func CreateBoard() *Board {
 	return &Board{}
@@ -17,4 +20,12 @@ func (board *Board) AddTask(name string) Task {
 	board.tasks = append(board.tasks, task)
 
 	return task
+}
+
+func (board *Board) Tasks() []Task {
+	sort.SliceStable(board.tasks, func(i, j int) bool {
+		return board.tasks[i].UpdatedAt.Unix() < board.tasks[j].UpdatedAt.Unix()
+	})
+
+	return board.tasks
 }
