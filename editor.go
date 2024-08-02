@@ -98,10 +98,10 @@ func (mode *EditorMode) Display() {
 	}
 }
 
-func (editor *Editor) Display() {
-	for id, task := range editor.board.Tasks() {
-		text := fmt.Sprintf("  [%02d] %v", id, task.Name)
+func (editor *Editor) DisplayTasks() {
+	const startingRow = 2
 
+	for row, task := range editor.board.Tasks() {
 		color := termbox.ColorWhite
 
 		switch task.State {
@@ -113,7 +113,16 @@ func (editor *Editor) Display() {
 			break
 		}
 
-		tbprint(0, 2+id, color, termbox.ColorDefault, text)
+		selectedSymbol := ' '
+
+		if task.Id == editor.board.SelectedTask.Id {
+			selectedSymbol = '*'
+			color = termbox.ColorLightCyan
+		}
+
+		text := fmt.Sprintf("%c [%04d] %v", selectedSymbol, task.Id, task.Name)
+
+		tbprint(0, startingRow+row, color, termbox.ColorDefault, text)
 	}
 }
 

@@ -1,6 +1,10 @@
 package taskmanagement
 
-import "time"
+import (
+	"time"
+
+	"github.com/marcos-venicius/daily-term/idcluster"
+)
 
 // these are all task states
 const (
@@ -12,6 +16,7 @@ const (
 type TaskState int
 
 type Task struct {
+	Id        int
 	Name      string
 	State     TaskState // default is Todo
 	CreatedAt time.Time
@@ -19,5 +24,7 @@ type Task struct {
 }
 
 type Board struct {
-	tasks []Task
+	tasks        []Task
+	idCluster    *idcluster.IdCluster
+	SelectedTask *Task // current selected task
 }

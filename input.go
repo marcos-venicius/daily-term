@@ -169,6 +169,7 @@ func (input *Input) Reset() {
 func (input *Input) startListeningEvents(editor *Editor) {
 	go func() {
 		for editor.mode.IsCommand() && editor.running {
+			// TODO: find a way of consuming the editor events
 			event := termbox.PollEvent()
 
 			switch event.Type {

@@ -30,6 +30,14 @@ func main() {
 			Type:     argumentparser.StringArgumentType,
 		},
 	)
+	editor.argumentParser.AddCommand(
+		"select task",
+		argumentparser.CommandArgumentSyntax{
+			Name:     "Task id",
+			Required: true,
+			Type:     argumentparser.IntArgumentType,
+		},
+	)
 
 	editor.argumentParser.Finish()
 
@@ -40,7 +48,7 @@ func main() {
 
 		editor.mode.Display()
 
-		editor.Display()
+		editor.DisplayTasks()
 
 		if editor.mode.IsCommand() {
 			editor.commandInput.Draw()

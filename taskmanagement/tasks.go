@@ -3,14 +3,23 @@ package taskmanagement
 import (
 	"sort"
 	"time"
+
+	"github.com/marcos-venicius/daily-term/idcluster"
 )
 
 func CreateBoard() *Board {
-	return &Board{}
+	idCluster := idcluster.CreateIdCluster()
+
+	return &Board{
+		tasks:        []Task{},
+		idCluster:    idCluster,
+		SelectedTask: nil,
+	}
 }
 
 func (board *Board) AddTask(name string) Task {
 	task := Task{
+		Id:        board.idCluster.NewId(),
 		Name:      name,
 		State:     Todo,
 		CreatedAt: time.Now(),
@@ -18,6 +27,10 @@ func (board *Board) AddTask(name string) Task {
 	}
 
 	board.tasks = append(board.tasks, task)
+
+	if len(board.tasks) == 1 {
+		board.SelectedTask = &board.tasks[0]
+	}
 
 	return task
 }
