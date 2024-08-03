@@ -8,7 +8,7 @@ import (
 const (
 	Todo       TaskState = iota
 	InProgress TaskState = iota
-	Done       TaskState = iota
+	Completed       TaskState = iota
 )
 
 type TaskState int

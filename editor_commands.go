@@ -1,9 +1,34 @@
 package main
 
-import argumentparser "github.com/marcos-venicius/daily-term/argument-parser"
+import (
+	argumentparser "github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/marcos-venicius/daily-term/taskmanagement"
+)
 
 func (editor *Editor) Quit() {
 	editor.Stop()
+}
+
+func (editor *Editor) ChangeCurrentTaskStateFor(state taskmanagement.TaskState) {
+	var err error
+
+	switch state {
+	case taskmanagement.Todo:
+		err = editor.board.MoveCurrentSelectedTaskToTodo()
+		break
+	case taskmanagement.InProgress:
+		err = editor.board.MoveCurrentSelectedTaskToInProgress()
+		break
+	case taskmanagement.Completed:
+		err = editor.board.MoveCurrentSelectedTaskToCompleted()
+		break
+	default:
+		break
+	}
+
+	if err != nil {
+		editor.SetErrorMessage(err.Error())
+	}
 }
 
 func (editor *Editor) addTask(arguments []argumentparser.CommandArgument) {

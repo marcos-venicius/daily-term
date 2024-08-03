@@ -41,6 +41,12 @@ func CreateEditor() *Editor {
 	argumentParser := argumentparser.CreateArgumentParser()
 	board := taskmanagement.CreateBoard()
 
+	// TODO: remove this tasks
+	board.AddTask("Lorem ipsum dolor sit ammet consectur")
+	board.AddTask("This is a brand new task")
+	board.AddTask("Another nice task")
+	board.AddTask("Other task")
+
 	editor := &Editor{
 		mode:           NormalMode,
 		termbox_event:  termbox_event,
@@ -122,19 +128,18 @@ func (editor *Editor) DisplayTasks() {
 		case taskmanagement.InProgress:
 			color = termbox.ColorYellow
 			break
-		case taskmanagement.Done:
+		case taskmanagement.Completed:
 			color = termbox.ColorGreen
 			break
 		}
 
-		selectedSymbol := ' '
+		selectedSymbol := task.Symbol(*editor.board.SelectedTaskId())
 
 		if task.Id == *editor.board.SelectedTaskId() {
 			if editor.mode.IsDelete() {
 				selectedSymbol = '-'
 				color = termbox.ColorLightRed
 			} else {
-				selectedSymbol = '*'
 				color = termbox.ColorLightCyan
 			}
 		}
@@ -191,6 +196,15 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 		break
 	case 'k':
 		editor.board.SelectPreviousTask()
+		break
+	case 't':
+		editor.ChangeCurrentTaskStateFor(taskmanagement.Todo)
+		break
+	case 'i':
+		editor.ChangeCurrentTaskStateFor(taskmanagement.InProgress)
+		break
+	case 'c':
+		editor.ChangeCurrentTaskStateFor(taskmanagement.Completed)
 		break
 	default:
 		break

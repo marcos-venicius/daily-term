@@ -17,6 +17,9 @@ https://github.com/user-attachments/assets/c6dc62ec-f643-42dc-aab2-dbfe32f8f7c6
 - <kbd>k</kbd> previous task
 - <kbd>j</kbd> next task
 - <kbd>d</kbd> enter `DELETE` mode
+- <kbd>t</kbd> move task to state `Todo`
+- <kbd>i</kbd> move task to state `In Progress`
+- <kbd>c</kbd> move task to state `Completed`
 - <kbd>Esc</kbd> clear error
 
 ## DELETE mode keybindings
