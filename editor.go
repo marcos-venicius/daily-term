@@ -184,7 +184,7 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 		editor.SetDeleteMode()
 		break
 	case 'q':
-		editor.running = false
+		editor.Stop()
 		break
 	case 'j':
 		editor.board.SelectNextTask()
@@ -273,8 +273,8 @@ func (editor *Editor) exec(command string) {
 	}
 
 	switch cmd.Name {
-	case "quit":
-		editor.Stop()
+	case "quit", "q":
+		editor.Quit()
 		break
 	case "new task":
 		editor.addTask(cmd.Arguments)

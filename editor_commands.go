@@ -2,6 +2,10 @@ package main
 
 import argumentparser "github.com/marcos-venicius/daily-term/argument-parser"
 
+func (editor *Editor) Quit() {
+	editor.Stop()
+}
+
 func (editor *Editor) addTask(arguments []argumentparser.CommandArgument) {
 	var name = arguments[0].Value.(string)
 
