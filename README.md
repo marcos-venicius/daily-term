@@ -29,8 +29,8 @@ https://github.com/user-attachments/assets/c6dc62ec-f643-42dc-aab2-dbfe32f8f7c6
 
 ## COMMAND mode commands
 
-- `quit` quit
-- `new task "<task name>"` create a new task
-- `delete task` delete current selected task
-- `delete task <id (int)>` delete task by id
+- `q` `quit` quit
+- `nt "<task name>"` `new task "<task name>"` create a new task
+- `dt` `delete task` delete current selected task
+- `dt <id (int)>` `delete task <id (int)>` delete task by id
 - <kbd>Esc</kbd> cancel `COMMAND` mode

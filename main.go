@@ -4,7 +4,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/marcos-venicius/daily-term/argumentparser"
 	"github.com/nsf/termbox-go"
 )
 
@@ -21,26 +20,7 @@ func main() {
 
 	defer close(editor.termbox_event)
 
-	editor.argumentParser.AddCommand("q")
-	editor.argumentParser.AddCommand("quit")
-	editor.argumentParser.AddCommand(
-		"new task",
-		argumentparser.CommandArgumentSyntax{
-			Name:     "Task name (string)",
-			Required: true,
-			Type:     argumentparser.StringArgumentType,
-		},
-	)
-	editor.argumentParser.AddCommand(
-		"delete task",
-		argumentparser.CommandArgumentSyntax{
-			Name:     "Task id (int)",
-			Required: false,
-			Type:     argumentparser.IntArgumentType,
-		},
-	)
-
-	editor.argumentParser.Finish()
+	editor.InitParser()
 
 	termbox.Flush()
 

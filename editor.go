@@ -290,10 +290,10 @@ func (editor *Editor) exec(command string) {
 	case "quit", "q":
 		editor.Quit()
 		break
-	case "new task":
+	case "new task", "nt":
 		editor.addTask(cmd.Arguments)
 		break
-	case "delete task":
+	case "delete task", "dt":
 		editor.deleteTask(cmd.Arguments)
 		break
 	default:
