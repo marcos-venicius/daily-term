@@ -1,44 +1,69 @@
 package taskmanagement
 
-import (
-	"sort"
-	"time"
-
-	"github.com/marcos-venicius/daily-term/idcluster"
-)
+import "github.com/marcos-venicius/daily-term/idcluster"
 
 func CreateBoard() *Board {
 	idCluster := idcluster.CreateIdCluster()
 
 	return &Board{
-		tasks:        []Task{},
-		idCluster:    idCluster,
-		SelectedTask: nil,
+		task:      nil,
+		size:      0,
+		idCluster: idCluster,
+	}
+}
+
+func (board *Board) SelectedTaskId() *int {
+	return &board.task.Id
+}
+
+func (board *Board) SelectNextTask() {
+	if board.task.next != nil {
+		board.task = board.task.next
+	}
+}
+
+func (board *Board) SelectPreviousTask() {
+	if board.task.prev != nil {
+		board.task = board.task.prev
 	}
 }
 
 func (board *Board) AddTask(name string) Task {
 	task := Task{
-		Id:        board.idCluster.NewId(),
-		Name:      name,
-		State:     Todo,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Id:    board.idCluster.NewId(),
+		Name:  name,
+		State: Todo,
+		prev:  nil,
+		next:  nil,
 	}
 
-	board.tasks = append(board.tasks, task)
-
-	if len(board.tasks) == 1 {
-		board.SelectedTask = &board.tasks[0]
+	if board.task == nil {
+		board.task = &task
+		board.root = board.task
+	} else {
+		task.next = board.root
+		board.root.prev = &task
+		board.root = &task
+		board.task = board.root
 	}
 
 	return task
 }
 
 func (board *Board) Tasks() []Task {
-	sort.SliceStable(board.tasks, func(i, j int) bool {
-		return board.tasks[i].UpdatedAt.Unix() < board.tasks[j].UpdatedAt.Unix()
-	})
+	var tasks []Task = make([]Task, board.size)
 
-	return board.tasks
+	current := board.root
+
+	for current.prev != nil {
+		current = current.prev
+	}
+
+	for current != nil {
+		tasks = append(tasks, *current)
+
+		current = current.next
+	}
+
+	return tasks
 }

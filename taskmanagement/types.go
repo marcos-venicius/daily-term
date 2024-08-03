@@ -1,8 +1,6 @@
 package taskmanagement
 
 import (
-	"time"
-
 	"github.com/marcos-venicius/daily-term/idcluster"
 )
 
@@ -16,15 +14,17 @@ const (
 type TaskState int
 
 type Task struct {
-	Id        int
-	Name      string
-	State     TaskState // default is Todo
-	CreatedAt time.Time
-	UpdatedAt time.Time // updated automatically every time the state or name changes
+	Id    int
+	Name  string
+	State TaskState // default is Todo
+
+	prev *Task // previous task in the board
+	next *Task // next task in the board
 }
 
 type Board struct {
-	tasks        []Task
-	idCluster    *idcluster.IdCluster
-	SelectedTask *Task // current selected task
+	task      *Task // current selected task
+	root      *Task // tree root node
+	size      uint  // board size
+	idCluster *idcluster.IdCluster
 }

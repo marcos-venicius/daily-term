@@ -40,6 +40,11 @@ func CreateEditor() *Editor {
 	argumentParser := argumentparser.CreateArgumentParser()
 	board := taskmanagement.CreateBoard()
 
+	board.AddTask("new task")
+	board.AddTask("task two")
+	board.AddTask("task three")
+	board.AddTask("task four")
+
 	editor := &Editor{
 		mode:           NormalMode,
 		termbox_event:  termbox_event,
@@ -115,7 +120,7 @@ func (editor *Editor) DisplayTasks() {
 
 		selectedSymbol := ' '
 
-		if task.Id == editor.board.SelectedTask.Id {
+		if task.Id == *editor.board.SelectedTaskId() {
 			selectedSymbol = '*'
 			color = termbox.ColorLightCyan
 		}
@@ -158,14 +163,20 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 	}
 
 	switch event.Ch {
-	case rune(':'):
+	case ':':
 		editor.SetCommandMode()
-		return
-	case rune('q'):
+		break
+	case 'q':
 		editor.running = false
-		return
+		break
+	case 'j':
+		editor.board.SelectNextTask()
+		break
+	case 'k':
+		editor.board.SelectPreviousTask()
+		break
 	default:
-		return
+		break
 	}
 }
 
