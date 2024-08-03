@@ -4,6 +4,12 @@ Manage your daily tasks using your terminal with **vim motions**
 
 https://github.com/user-attachments/assets/c6dc62ec-f643-42dc-aab2-dbfe32f8f7c6
 
+## Install
+
+```bash
+go install github.com/marcos-venicius/daily-term@latest
+```
+
 ## Modes
 
 - `NORMAL`
