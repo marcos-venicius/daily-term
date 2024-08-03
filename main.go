@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/marcos-venicius/daily-term/argumentparser"
 	"github.com/nsf/termbox-go"
 )
 

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/marcos-venicius/daily-term/argumentparser"
 	"github.com/marcos-venicius/daily-term/taskmanagement"
 	"github.com/nsf/termbox-go"
 )

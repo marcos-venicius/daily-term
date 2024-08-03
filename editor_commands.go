@@ -1,7 +1,7 @@
 package main
 
 import (
-	argumentparser "github.com/marcos-venicius/daily-term/argument-parser"
+	"github.com/marcos-venicius/daily-term/argumentparser"
 	"github.com/marcos-venicius/daily-term/taskmanagement"
 )
 
