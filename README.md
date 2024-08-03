@@ -2,12 +2,13 @@
 
 Manage your daily tasks using your terminal with **vim motions**
 
-https://github.com/user-attachments/assets/53b2be7f-037c-4b24-806c-c324c0691964
+https://github.com/user-attachments/assets/c6dc62ec-f643-42dc-aab2-dbfe32f8f7c6
 
 ## Modes
 
-- NORMAL
-- COMMAND
+- `NORMAL`
+- `COMMAND`
+- `DELETE`
 
 ## NORMAL mode keybindings
 
@@ -21,6 +22,7 @@ https://github.com/user-attachments/assets/53b2be7f-037c-4b24-806c-c324c0691964
 ## DELETE mode keybindings
 
 - <kbd>d</kbd> delete current selected task
+- <kbd>Esc</kbd> cancel `DELETE` mode
 
 ## COMMAND mode commands
 
@@ -28,4 +30,4 @@ https://github.com/user-attachments/assets/53b2be7f-037c-4b24-806c-c324c0691964
 - `new task "<task name>"` create a new task
 - `delete task` delete current selected task
 - `delete task <id (int)>` delete task by id
-- <kbd>Esc</kbd> go back to `NORMAL` mode
+- <kbd>Esc</kbd> cancel `COMMAND` mode
