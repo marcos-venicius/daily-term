@@ -2,7 +2,7 @@
 
 Manage your daily tasks using your terminal with **vim motions**
 
-https://github.com/user-attachments/assets/c6dc62ec-f643-42dc-aab2-dbfe32f8f7c6
+https://github.com/user-attachments/assets/f5884bdf-b8e4-49df-b335-54aeab1ccd5e
 
 ## Install
 
