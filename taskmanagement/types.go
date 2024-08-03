@@ -25,6 +25,5 @@ type Task struct {
 type Board struct {
 	task      *Task // current selected task
 	root      *Task // tree root node
-	size      uint  // board size
 	idCluster *idcluster.IdCluster
 }

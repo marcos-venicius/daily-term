@@ -158,36 +158,38 @@ func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgumen
 			Type: arg.Type,
 		}
 
-		switch arg.Type {
-		case StringArgumentType:
-			commandArgument.Value = argument
-			break
-		case IntArgumentType:
-			v, err := strconv.Atoi(argument)
-
-			if err != nil {
-				return nil, errors.New(fmt.Sprintf(`Invalid "%v" argument. Cannot parse it as int`, arg.Name))
-			}
-
-			commandArgument.Value = v
-			break
-		case BooleanArgumentType:
-			switch argument {
-			case "true", "1", "t", "yes", "yeah", "y":
-				commandArgument.Value = true
+		if len(argument) != 0 {
+			switch arg.Type {
+			case StringArgumentType:
+				commandArgument.Value = argument
 				break
-			case "false", "0", "f", "no", "not", "n":
-				commandArgument.Value = false
+			case IntArgumentType:
+				v, err := strconv.Atoi(argument)
+
+				if err != nil {
+					return nil, errors.New(fmt.Sprintf(`Invalid "%v" argument. Cannot parse it as int`, arg.Name))
+				}
+
+				commandArgument.Value = v
 				break
+			case BooleanArgumentType:
+				switch argument {
+				case "true", "1", "t", "yes", "yeah", "y":
+					commandArgument.Value = true
+					break
+				case "false", "0", "f", "no", "not", "n":
+					commandArgument.Value = false
+					break
+				default:
+					return nil, errors.New(fmt.Sprintf(`Invalid argument "%v" type`, arg.Name))
+				}
 			default:
-				return nil, errors.New(fmt.Sprintf(`Invalid argument "%v" type`, arg.Name))
+				break
 			}
-		default:
-			break
-		}
 
-		arguments = append(arguments, commandArgument)
-		text = text[size-1:]
+			text = text[size-1:]
+			arguments = append(arguments, commandArgument)
+		}
 	}
 
 	return arguments, nil
@@ -206,6 +208,9 @@ func (cmd *ArgumentParser) ParseFromString(text string) (*Command, error) {
 		command = append(command, b)
 
 		if cmd, ok := cmd.commandsMap[string(command)]; ok {
+			if index < len(text)-1 && text[index+1] != ' ' {
+				continue
+			}
 
 			arguments, err := parseArguments(text[index+1:], cmd.Arguments)
 

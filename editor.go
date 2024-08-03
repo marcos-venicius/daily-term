@@ -12,6 +12,7 @@ import (
 const (
 	NormalMode  EditorMode = iota // when the user wants to be able to select another editor mode
 	CommandMode EditorMode = iota // when the user wants execute some command like quit (q)
+	DeleteMode  EditorMode = iota // when the user wants delete a task
 )
 
 type EditorMode int
@@ -39,11 +40,6 @@ func CreateEditor() *Editor {
 
 	argumentParser := argumentparser.CreateArgumentParser()
 	board := taskmanagement.CreateBoard()
-
-	board.AddTask("new task")
-	board.AddTask("task two")
-	board.AddTask("task three")
-	board.AddTask("task four")
 
 	editor := &Editor{
 		mode:           NormalMode,
@@ -73,12 +69,22 @@ func (editor *Editor) Stop() {
 	termbox.Interrupt()
 }
 
+func (editor *Editor) SetDeleteMode() {
+	if editor.board.HasTasks() {
+		editor.mode = DeleteMode
+	}
+}
+
 func (editor *Editor) SetNormalMode() {
 	editor.mode = NormalMode
 }
 
 func (editor *Editor) SetCommandMode() {
 	editor.mode = CommandMode
+}
+
+func (mode *EditorMode) IsDelete() bool {
+	return *mode == DeleteMode
 }
 
 func (mode *EditorMode) IsNormal() bool {
@@ -96,6 +102,9 @@ func (mode *EditorMode) Display() {
 		break
 	case CommandMode:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "COMMAND")
+		break
+	case DeleteMode:
+		tbprint(0, 0, termbox.ColorRed, termbox.ColorDefault, "DELETE")
 		break
 	default:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "UNKNOWN")
@@ -121,8 +130,13 @@ func (editor *Editor) DisplayTasks() {
 		selectedSymbol := ' '
 
 		if task.Id == *editor.board.SelectedTaskId() {
-			selectedSymbol = '*'
-			color = termbox.ColorLightCyan
+			if editor.mode.IsDelete() {
+				selectedSymbol = '-'
+				color = termbox.ColorLightRed
+			} else {
+				selectedSymbol = '*'
+				color = termbox.ColorLightCyan
+			}
 		}
 
 		text := fmt.Sprintf("%c [%04d] %v", selectedSymbol, task.Id, task.Name)
@@ -154,7 +168,7 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 		return
 	}
 
-	if len(editor.errorMessage) > 0 && event.Key == termbox.KeyEsc {
+	if len(editor.errorMessage) > 0 {
 		editor.errorMessage = ""
 	}
 
@@ -165,6 +179,9 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 	switch event.Ch {
 	case ':':
 		editor.SetCommandMode()
+		break
+	case 'd':
+		editor.SetDeleteMode()
 		break
 	case 'q':
 		editor.running = false
@@ -195,6 +212,28 @@ func (editor *Editor) listenCommandModeEvents(event termbox.Event) {
 	}
 }
 
+func (editor *Editor) listenDeleteModeEvents(event termbox.Event) {
+	if !editor.running {
+		return
+	}
+
+	if event.Type != termbox.EventKey {
+		return
+	}
+
+	if event.Key == termbox.KeyEsc {
+		editor.SetNormalMode()
+	}
+
+	switch event.Ch {
+	case 'd':
+		editor.exec("delete task")
+		break
+	default:
+		break
+	}
+}
+
 func (editor *Editor) listenEvents() {
 	go func() {
 		for editor.running {
@@ -204,6 +243,8 @@ func (editor *Editor) listenEvents() {
 				editor.listenNormalModeEvents(event)
 			} else if editor.mode.IsCommand() {
 				editor.listenCommandModeEvents(event)
+			} else if editor.mode.IsDelete() {
+				editor.listenDeleteModeEvents(event)
 			}
 
 			editor.commandInput.handleEvents(editor, event)
@@ -234,12 +275,15 @@ func (editor *Editor) exec(command string) {
 	switch cmd.Name {
 	case "quit":
 		editor.Stop()
-		return
+		break
 	case "new task":
 		editor.addTask(cmd.Arguments)
-		return
+		break
+	case "delete task":
+		editor.deleteTask(cmd.Arguments)
+		break
 	default:
 		editor.SetErrorMessage(fmt.Sprintf(`Unhandled command "%v"`, cmd.Name))
-		return
+		break
 	}
 }

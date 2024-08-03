@@ -1,31 +1,112 @@
 package taskmanagement
 
-import "github.com/marcos-venicius/daily-term/idcluster"
+import (
+	"errors"
+
+	"github.com/marcos-venicius/daily-term/idcluster"
+)
 
 func CreateBoard() *Board {
 	idCluster := idcluster.CreateIdCluster()
 
 	return &Board{
 		task:      nil,
-		size:      0,
+		root:      nil,
 		idCluster: idCluster,
 	}
 }
 
+func (board *Board) HasTasks() bool {
+	return board.root != nil
+}
+
 func (board *Board) SelectedTaskId() *int {
-	return &board.task.Id
+	if board.task != nil {
+		return &board.task.Id
+	}
+
+	return nil
 }
 
 func (board *Board) SelectNextTask() {
-	if board.task.next != nil {
+	if board.task != nil && board.task.next != nil {
 		board.task = board.task.next
 	}
 }
 
 func (board *Board) SelectPreviousTask() {
-	if board.task.prev != nil {
+	if board.task != nil && board.task.prev != nil {
 		board.task = board.task.prev
 	}
+}
+
+func (board *Board) DeleteCurrentSelectedTask() error {
+	if board.root == nil {
+		return errors.New("You don't have any selected task")
+	}
+
+	if board.task.next == nil && board.task.prev == nil {
+		board.root = nil
+		board.task = nil
+		return nil
+	} else if board.task.prev != nil && board.task.next != nil {
+		board.task.next.prev, board.task.prev.next = board.task.prev, board.task.next
+		board.task = board.task.next
+		return nil
+	} else if board.task.prev == nil && board.task.next != nil {
+		board.task = board.task.next
+		board.task.prev = nil
+		board.root = board.task
+		return nil
+	} else if board.task.next == nil && board.task.prev != nil {
+		board.task = board.task.prev
+		board.task.next = nil
+		board.root = board.task
+		return nil
+	}
+
+	return errors.New("Something went wrong")
+}
+
+func (board *Board) DeleteTaskById(id int) error {
+	if board.root == nil {
+		return errors.New("You don't have any selected task")
+	}
+
+	current := board.root
+
+	for current != nil {
+		if current.Id == id {
+			if current.next == nil && current.prev == nil {
+				board.root = nil
+				current = nil
+				return nil
+			} else if current.prev != nil && current.next != nil {
+				current.next.prev, current.prev.next = current.prev, current.next
+				current = current.next
+        board.task = current
+				return nil
+			} else if current.prev == nil && current.next != nil {
+				current = current.next
+				current.prev = nil
+				board.root = current
+        board.task = current
+				return nil
+			} else if current.next == nil && current.prev != nil {
+				current = current.prev
+				current.next = nil
+				board.root = current
+        board.task = current
+				return nil
+			}
+
+			return errors.New("Something went wrong")
+		}
+
+		current = current.next
+	}
+
+	return errors.New("Task not found")
 }
 
 func (board *Board) AddTask(name string) Task {
@@ -51,7 +132,11 @@ func (board *Board) AddTask(name string) Task {
 }
 
 func (board *Board) Tasks() []Task {
-	var tasks []Task = make([]Task, board.size)
+	if board.task == nil {
+		return []Task{}
+	}
+
+	var tasks []Task
 
 	current := board.root
 

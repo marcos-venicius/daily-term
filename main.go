@@ -31,10 +31,10 @@ func main() {
 		},
 	)
 	editor.argumentParser.AddCommand(
-		"select task",
+		"delete task",
 		argumentparser.CommandArgumentSyntax{
-			Name:     "Task id",
-			Required: true,
+			Name:     "Task id (int)",
+			Required: false,
 			Type:     argumentparser.IntArgumentType,
 		},
 	)
