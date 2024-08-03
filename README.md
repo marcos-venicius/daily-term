@@ -13,6 +13,8 @@ https://github.com/user-attachments/assets/53b2be7f-037c-4b24-806c-c324c0691964
 
 - <kbd>q</kbd> quit
 - <kbd>:</kbd> enter `COMMAND` mode
+- <kbd>k</kbd> previous task
+- <kbd>j</kbd> next task
 - <kbd>Esc</kbd> clear error
 
 ## COMMAND mode commands
