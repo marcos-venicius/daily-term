@@ -27,6 +27,14 @@ type Input struct {
 	y              int
 }
 
+func (input *Input) GetValue() string {
+	if len(input.text) > 0 {
+		return string(input.text[1:])
+	}
+
+	return ""
+}
+
 func CreateInput(width, height, x, y int) *Input {
 	input := &Input{
 		width:  width,
@@ -166,49 +174,52 @@ func (input *Input) Reset() {
 	termbox.HideCursor()
 }
 
-func (input *Input) startListeningEvents(editor *Editor) {
-	go func() {
-		for editor.mode.IsCommand() && editor.running {
-			// TODO: find a way of consuming the editor events
-			event := termbox.PollEvent()
+func (input *Input) handleEvents(editor *Editor, event termbox.Event) {
+	if !editor.mode.IsCommand() || !editor.running {
+		return
+	}
 
-			switch event.Type {
-			case termbox.EventKey:
-				switch event.Key {
-				case termbox.KeyArrowLeft:
-				case termbox.KeyCtrlH:
-					input.MoveCursorOneRuneBackward()
-				case termbox.KeyArrowRight:
-				case termbox.KeyCtrlL:
-					input.MoveCursorOneRuneForward()
-				case termbox.KeyBackspace2:
-					input.DeleteRuneBackward()
-				case termbox.KeyDelete, termbox.KeyCtrlD:
-					input.DeleteRuneForward()
-				case termbox.KeyTab:
-					input.InsertRune('\t')
-				case termbox.KeySpace:
-					input.InsertRune(' ')
-				case termbox.KeyCtrlK:
-					input.DeleteTheRestOfTheLine()
-				case termbox.KeyHome, termbox.KeyCtrlA:
-					input.MoveCursorToBeginningOfTheLine()
-				case termbox.KeyEnd, termbox.KeyCtrlE:
-					input.MoveCursorToEndOfTheLine()
-				case termbox.KeyEnter:
-					termbox.Interrupt()
-					command := string(input.text)
-					input.Reset()
-					editor.exec(command)
-					return
-				default:
-					if event.Ch != 0 {
-						input.InsertRune(event.Ch)
-					}
-				}
+	switch event.Type {
+	case termbox.EventKey:
+		switch event.Key {
+		case termbox.KeyArrowLeft:
+		case termbox.KeyCtrlH:
+			input.MoveCursorOneRuneBackward()
+		case termbox.KeyArrowRight:
+		case termbox.KeyCtrlL:
+			input.MoveCursorOneRuneForward()
+		case termbox.KeyBackspace2:
+			input.DeleteRuneBackward()
+		case termbox.KeyDelete, termbox.KeyCtrlD:
+			input.DeleteRuneForward()
+		case termbox.KeyTab:
+			input.InsertRune('\t')
+		case termbox.KeySpace:
+			input.InsertRune(' ')
+		case termbox.KeyCtrlK:
+			input.DeleteTheRestOfTheLine()
+		case termbox.KeyHome, termbox.KeyCtrlA:
+			input.MoveCursorToBeginningOfTheLine()
+		case termbox.KeyEnd, termbox.KeyCtrlE:
+			input.MoveCursorToEndOfTheLine()
+		case termbox.KeyEnter:
+			termbox.Interrupt()
+			command := input.GetValue()
+			input.Reset()
+			editor.exec(command)
+			return
+		default:
+			if event.Ch != 0 {
+				input.InsertRune(event.Ch)
 			}
 		}
-	}()
+	}
+
+	if len(input.text) == 0 {
+		termbox.Interrupt()
+		input.Reset()
+		editor.SetNormalMode()
+	}
 }
 
 func (input *Input) drawInput(x, y, w, h int) {

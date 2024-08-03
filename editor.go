@@ -159,7 +159,6 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 
 	switch event.Ch {
 	case rune(':'):
-		editor.commandInput.startListeningEvents(editor)
 		editor.SetCommandMode()
 		return
 	case rune('q'):
@@ -195,6 +194,8 @@ func (editor *Editor) listenEvents() {
 			} else if editor.mode.IsCommand() {
 				editor.listenCommandModeEvents(event)
 			}
+
+			editor.commandInput.handleEvents(editor, event)
 		}
 	}()
 }
