@@ -12,6 +12,8 @@ func (editor *Editor) Quit() {
 func (editor *Editor) ChangeCurrentTaskStateFor(state taskmanagement.TaskState) {
 	var err error
 
+	previousTaskState := editor.board.CurrentTask().State
+
 	switch state {
 	case taskmanagement.Todo:
 		err = editor.board.MoveCurrentSelectedTaskToTodo()
@@ -26,8 +28,10 @@ func (editor *Editor) ChangeCurrentTaskStateFor(state taskmanagement.TaskState) 
 		break
 	}
 
-	if err != nil {
-		editor.SetErrorMessage(err.Error())
+	if !editor.setErrorMessageIfNNil(err) {
+		if editor.setErrorMessageIfNNil(editor.repository.SaveBoard(editor.board)) {
+			editor.setErrorMessageIfNNil(editor.board.SetCustomTaskState(previousTaskState)) // rollback
+		}
 	}
 }
 
@@ -36,14 +40,26 @@ func (editor *Editor) addTask(arguments []argumentparser.CommandArgument) {
 
 	editor.board.AddTask(name)
 
-	editor.SetInfoMessage("new task added successfully")
+	err := editor.repository.SaveBoard(editor.board)
+
+	if err != nil {
+		editor.board.DeleteCurrentSelectedTask()
+
+		editor.SetErrorMessage(err.Error())
+	} else {
+		editor.SetInfoMessage("new task added successfully")
+	}
 }
 
 func (editor *Editor) deleteTask(arguments []argumentparser.CommandArgument) {
+	success := false
+
 	if len(arguments) == 0 {
 		err := editor.board.DeleteCurrentSelectedTask()
 
 		if err == nil {
+			success = true
+
 			editor.SetInfoMessage("task deleted successfully")
 		} else {
 			editor.SetErrorMessage(err.Error())
@@ -54,9 +70,15 @@ func (editor *Editor) deleteTask(arguments []argumentparser.CommandArgument) {
 		err := editor.board.DeleteTaskById(taskId)
 
 		if err == nil {
+			success = true
+
 			editor.SetInfoMessage("task deleted successfully")
 		} else {
 			editor.SetErrorMessage(err.Error())
 		}
+	}
+
+	if success {
+		editor.setErrorMessageIfNNil(editor.repository.SaveBoard(editor.board))
 	}
 }

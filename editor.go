@@ -29,9 +29,10 @@ type Editor struct {
 	height         int
 	board          *taskmanagement.Board
 	fps            float64
+	repository     *taskmanagement.Repository
 }
 
-func CreateEditor() *Editor {
+func CreateEditor(repository *taskmanagement.Repository) *Editor {
 	windowWidth, windowHeight := termbox.Size()
 
 	var termbox_event chan termbox.Event = make(chan termbox.Event, 20)
@@ -41,11 +42,7 @@ func CreateEditor() *Editor {
 	argumentParser := argumentparser.CreateArgumentParser()
 	board := taskmanagement.CreateBoard()
 
-	// TODO: remove this tasks
-	board.AddTask("Lorem ipsum dolor sit ammet consectur")
-	board.AddTask("This is a brand new task")
-	board.AddTask("Another nice task")
-	board.AddTask("Other task")
+	repository.LoadBoard(board)
 
 	editor := &Editor{
 		mode:           NormalMode,
@@ -57,6 +54,7 @@ func CreateEditor() *Editor {
 		width:          windowWidth,
 		height:         windowHeight,
 		fps:            50,
+		repository:     repository,
 	}
 
 	go func() {
@@ -274,6 +272,17 @@ func (editor *Editor) SetErrorMessage(message string) {
 func (editor *Editor) SetInfoMessage(message string) {
 	editor.errorMessage = ""
 	editor.infoMessage = message
+}
+
+// shows error message if error is not nil and return true, if not return false
+func (e *Editor) setErrorMessageIfNNil(err error) bool {
+	if err != nil {
+		e.SetErrorMessage(err.Error())
+
+		return true
+	}
+
+	return false
 }
 
 func (editor *Editor) exec(command string) {

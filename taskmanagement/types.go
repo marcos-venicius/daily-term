@@ -8,18 +8,17 @@ import (
 const (
 	Todo       TaskState = iota
 	InProgress TaskState = iota
-	Completed       TaskState = iota
+	Completed  TaskState = iota
 )
 
 type TaskState int
 
 type Task struct {
-	Id    int
-	Name  string
-	State TaskState // default is Todo
-
-	prev *Task // previous task in the board
-	next *Task // next task in the board
+	Id    int       `json:"id"`
+	Name  string    `json:"name"`
+	State TaskState `json:"state"` // default is Todo
+	Prev  *Task     `json:"prev"`  // previous task in the board
+	Next  *Task     `json:"next"`  // next task in the board
 }
 
 type Board struct {

@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/marcos-venicius/daily-term/taskmanagement"
 	"github.com/nsf/termbox-go"
 )
 
@@ -14,10 +15,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	repository, err := taskmanagement.CreateRepository()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	editor := CreateEditor(repository)
+
 	defer termbox.Close()
-
-	editor := CreateEditor()
-
+	defer repository.CloseRepository()
 	defer close(editor.termbox_event)
 
 	editor.InitParser()

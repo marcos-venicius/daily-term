@@ -24,6 +24,10 @@ func (cluster *IdCluster) SetCustomIdMaxSize(size int) {
 	cluster.maxIdSize = size
 }
 
+func (cluster *IdCluster) MarkAsUsed(id int) {
+	cluster.history[id] = true
+}
+
 // Generate a new unique id (inside this application and based on current existent values)
 // Min 0, Max 9999 (default value ; can be modified by SetCustomIdMaxSize)
 func (cluster *IdCluster) NewId() int {
