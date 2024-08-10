@@ -137,8 +137,6 @@ func (editor *Editor) DisplayTasks() {
 			if editor.mode.IsDelete() {
 				selectedSymbol = '-'
 				color = termbox.ColorLightRed
-			} else {
-				color = termbox.ColorLightCyan
 			}
 		}
 
@@ -152,13 +150,13 @@ func (editor *Editor) DisplayError() {
 	if editor.errorMessage != "" && editor.mode.IsNormal() {
 		errorMessage := fmt.Sprintf("ERROR: %v", editor.errorMessage)
 
-		tbprint(0, editor.height-1, termbox.ColorRed, termbox.ColorDefault, errorMessage)
+		tbprint(0, editor.height-2, termbox.ColorRed, termbox.ColorDefault, errorMessage)
 	}
 }
 
 func (editor *Editor) DisplayInfo() {
 	if editor.infoMessage != "" && editor.mode.IsNormal() {
-		tbprint(0, editor.height-1, termbox.ColorWhite, termbox.ColorDefault, editor.infoMessage)
+		tbprint(0, editor.height-2, termbox.ColorWhite, termbox.ColorDefault, editor.infoMessage)
 	}
 }
 

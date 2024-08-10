@@ -3,12 +3,8 @@ package taskmanagement
 func (task *Task) Symbol(currentSelectedTaskId int) rune {
 	if task.Id == currentSelectedTaskId {
 		switch task.State {
-		case Todo:
-			return 't'
-		case InProgress:
-			return 'i'
-		case Completed:
-			return 'c'
+		case Todo, InProgress, Completed:
+			return '*'
 		default:
 			return '*'
 		}
