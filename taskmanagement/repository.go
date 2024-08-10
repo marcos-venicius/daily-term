@@ -15,6 +15,13 @@ type Repository struct {
 }
 
 func (r *Repository) SaveBoard(board *Board) error {
+	if board.root == nil {
+		r.file.Truncate(0)
+		r.file.Seek(0, 0)
+
+    return nil
+	}
+
 	v, err := cycleparser.ToValue(board.root)
 
 	if err != nil {
@@ -27,7 +34,7 @@ func (r *Repository) SaveBoard(board *Board) error {
 		return err
 	}
 
-  r.file.Truncate(0)
+	r.file.Truncate(0)
 	r.file.Seek(0, 0)
 
 	l, err := r.file.Write(bytes)
