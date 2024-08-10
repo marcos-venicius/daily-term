@@ -74,8 +74,8 @@ func (vu *valueUnmapper) fromBoolValue(data *Value, v reflect.Value) error {
 		return &InvalidUnmapperKindError{Expected: Bool, Kind: v.Kind().String()}
 	}
 
-  if fval, ok := data.Value.(bool); ok {
-    v.SetBool(fval)
+	if fval, ok := data.Value.(bool); ok {
+		v.SetBool(fval)
 		return nil
 	}
 
@@ -407,5 +407,5 @@ func FromValue(data *Value, v any) error {
 		return &UnmapperError{text: "can't resolve all refs, invalid input"}
 	}
 
-  return vu.fromValue(data, rv)
+	return vu.fromValue(data, rv)
 }

@@ -19,7 +19,7 @@ func (r *Repository) SaveBoard(board *Board) error {
 		r.file.Truncate(0)
 		r.file.Seek(0, 0)
 
-    return nil
+		return nil
 	}
 
 	v, err := cycleparser.ToValue(board.root)
