@@ -203,7 +203,6 @@ func (input *Input) handleEvents(editor *Editor, event termbox.Event) {
 		case termbox.KeyEnd, termbox.KeyCtrlE:
 			input.MoveCursorToEndOfTheLine()
 		case termbox.KeyEnter:
-			termbox.Interrupt()
 			command := input.GetValue()
 			input.Reset()
 			editor.exec(command)
@@ -216,7 +215,6 @@ func (input *Input) handleEvents(editor *Editor, event termbox.Event) {
 	}
 
 	if len(input.text) == 0 {
-		termbox.Interrupt()
 		input.Reset()
 		editor.SetNormalMode()
 	}

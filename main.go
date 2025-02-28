@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/marcos-venicius/daily-term/taskmanagement"
 	"github.com/nsf/termbox-go"
@@ -25,15 +24,15 @@ func main() {
 
 	defer termbox.Close()
 	defer repository.CloseRepository()
-	defer close(editor.termbox_event)
 
 	editor.InitParser()
 
 	termbox.Flush()
+	if err := termbox.Clear(termbox.ColorDefault, termbox.ColorDefault); err != nil {
+		panic(err)
+	}
 
 	for editor.running {
-		update := time.Now()
-
 		editor.mode.Display()
 
 		editor.DisplayTasks()
@@ -46,8 +45,12 @@ func main() {
 		editor.DisplayInfo()
 
 		termbox.Flush()
-		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+		if err := termbox.Clear(termbox.ColorDefault, termbox.ColorDefault); err != nil {
+			panic(err)
+		}
 
-		time.Sleep(time.Duration((update.Sub(time.Now()).Seconds()*1000.0)+1000.0/editor.fps) * time.Millisecond)
+		event := termbox.PollEvent()
+
+		editor.ListenEvents(event)
 	}
 }

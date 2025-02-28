@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
@@ -15,9 +16,13 @@ type Repository struct {
 }
 
 func (r *Repository) SaveBoard(board *Board) error {
+	defer func() {
+		_, _ = r.file.Seek(0, io.SeekStart)
+	}()
+
 	if board.root == nil {
-		r.file.Truncate(0)
-		r.file.Seek(0, 0)
+		_ = r.file.Truncate(0)
+		_, _ = r.file.Seek(0, 0)
 
 		return nil
 	}
@@ -34,8 +39,8 @@ func (r *Repository) SaveBoard(board *Board) error {
 		return err
 	}
 
-	r.file.Truncate(0)
-	r.file.Seek(0, 0)
+	_ = r.file.Truncate(0)
+	_, _ = r.file.Seek(0, 0)
 
 	l, err := r.file.Write(bytes)
 
@@ -52,6 +57,10 @@ func (r *Repository) SaveBoard(board *Board) error {
 
 func (r *Repository) LoadBoard(board *Board) {
 	stat, err := r.file.Stat()
+
+	defer func() {
+		_, _ = r.file.Seek(0, io.SeekStart)
+	}()
 
 	if stat.Size() == 0 {
 		return

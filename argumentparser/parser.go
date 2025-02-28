@@ -62,7 +62,7 @@ func (cmd *ArgumentParser) AddCommand(name string, arguments ...CommandArgumentS
 		case IntArgumentType, StringArgumentType, BooleanArgumentType:
 			break
 		default:
-			return errors.New(fmt.Sprintf("Argument \"%v\" have a invalid type \"%d\"", argument.Name, argument.Type))
+			return fmt.Errorf("Argument \"%v\" have a invalid type \"%d\"", argument.Name, argument.Type)
 		}
 
 		if hasOptional && argument.Required {
@@ -134,7 +134,7 @@ func nextArgument(text string, argumentName string) (string, int, error) {
 		return text, pad + len(text), nil
 	}
 
-	return "", 0, errors.New(fmt.Sprintf(`Invalid argument "%v" format`, argumentName))
+	return "", 0, fmt.Errorf(`Invalid argument "%v" format`, argumentName)
 }
 
 func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgument, error) {
@@ -150,7 +150,7 @@ func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgumen
 		}
 
 		if len(argument) == 0 && arg.Required {
-			return nil, errors.New(fmt.Sprintf(`"%v" is required`, arg.Name))
+			return nil, fmt.Errorf(`"%v" is required`, arg.Name)
 		}
 
 		commandArgument := CommandArgument{
@@ -162,26 +162,22 @@ func parseArguments(text string, args []CommandArgumentSyntax) ([]CommandArgumen
 			switch arg.Type {
 			case StringArgumentType:
 				commandArgument.Value = argument
-				break
 			case IntArgumentType:
 				v, err := strconv.Atoi(argument)
 
 				if err != nil {
-					return nil, errors.New(fmt.Sprintf(`Invalid "%v" argument. Cannot parse it as int`, arg.Name))
+					return nil, fmt.Errorf(`Invalid "%v" argument. Cannot parse it as int`, arg.Name)
 				}
 
 				commandArgument.Value = v
-				break
 			case BooleanArgumentType:
 				switch argument {
 				case "true", "1", "t", "yes", "yeah", "y":
 					commandArgument.Value = true
-					break
 				case "false", "0", "f", "no", "not", "n":
 					commandArgument.Value = false
-					break
 				default:
-					return nil, errors.New(fmt.Sprintf(`Invalid argument "%v" type`, arg.Name))
+					return nil, fmt.Errorf(`Invalid argument "%v" type`, arg.Name)
 				}
 			default:
 				break
@@ -227,5 +223,5 @@ func (cmd *ArgumentParser) ParseFromString(text string) (*Command, error) {
 		}
 	}
 
-	return nil, errors.New(fmt.Sprintf("\"%v\" is not a valid command", text))
+	return nil, fmt.Errorf("\"%v\" is not a valid command", text)
 }

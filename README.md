@@ -26,6 +26,7 @@ go install github.com/marcos-venicius/daily-term@latest
 - <kbd>t</kbd> move task to state `Todo`
 - <kbd>i</kbd> move task to state `In Progress`
 - <kbd>c</kbd> move task to state `Completed`
+- <kbd>R</kbd> refresh the board
 - <kbd>Esc</kbd> clear error
 
 ## DELETE mode keybindings
@@ -36,6 +37,7 @@ go install github.com/marcos-venicius/daily-term@latest
 ## COMMAND mode commands
 
 - `q` `quit` quit
+- `w` `wa` save the current board state to the database (it overrides everything without checking)
 - `nt "<task name>"` `new task "<task name>"` create a new task
 - `dt` `delete task` delete current selected task
 - `dt <id (int)>` `delete task <id (int)>` delete task by id

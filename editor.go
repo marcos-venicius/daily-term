@@ -19,7 +19,6 @@ type EditorMode int
 
 type Editor struct {
 	mode           EditorMode // current editor mode (default is Normal Mode)
-	termbox_event  chan termbox.Event
 	running        bool
 	commandInput   *Input
 	argumentParser *argumentparser.ArgumentParser
@@ -35,8 +34,6 @@ type Editor struct {
 func CreateEditor(repository *taskmanagement.Repository) *Editor {
 	windowWidth, windowHeight := termbox.Size()
 
-	var termbox_event chan termbox.Event = make(chan termbox.Event, 20)
-
 	termbox.SetInputMode(termbox.InputEsc)
 
 	argumentParser := argumentparser.CreateArgumentParser()
@@ -46,7 +43,6 @@ func CreateEditor(repository *taskmanagement.Repository) *Editor {
 
 	editor := &Editor{
 		mode:           NormalMode,
-		termbox_event:  termbox_event,
 		running:        true,
 		commandInput:   CreateInput(windowWidth, 1, 0, windowHeight-1),
 		argumentParser: argumentParser,
@@ -57,20 +53,17 @@ func CreateEditor(repository *taskmanagement.Repository) *Editor {
 		repository:     repository,
 	}
 
-	go func() {
-		for editor.running {
-			editor.termbox_event <- termbox.PollEvent()
-		}
-	}()
-
-	editor.listenEvents()
-
 	return editor
+}
+
+func (e *Editor) ReloadBoard() {
+	e.repository.LoadBoard(e.board)
+
+	e.SetInfoMessage("Board reloaded sucessfully")
 }
 
 func (editor *Editor) Stop() {
 	editor.running = false
-	termbox.Interrupt()
 }
 
 func (editor *Editor) SetDeleteMode() {
@@ -103,16 +96,12 @@ func (mode *EditorMode) Display() {
 	switch *mode {
 	case NormalMode:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "NORMAL")
-		break
 	case CommandMode:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "COMMAND")
-		break
 	case DeleteMode:
 		tbprint(0, 0, termbox.ColorRed, termbox.ColorDefault, "DELETE")
-		break
 	default:
 		tbprint(0, 0, termbox.ColorWhite, termbox.ColorDefault, "UNKNOWN")
-		break
 	}
 }
 
@@ -125,10 +114,8 @@ func (editor *Editor) DisplayTasks() {
 		switch task.State {
 		case taskmanagement.InProgress:
 			color = termbox.ColorYellow
-			break
 		case taskmanagement.Completed:
 			color = termbox.ColorGreen
-			break
 		}
 
 		selectedSymbol := task.Symbol(*editor.board.SelectedTaskId())
@@ -180,30 +167,22 @@ func (editor *Editor) listenNormalModeEvents(event termbox.Event) {
 	switch event.Ch {
 	case ':':
 		editor.SetCommandMode()
-		break
 	case 'd':
 		editor.SetDeleteMode()
-		break
 	case 'q':
 		editor.Stop()
-		break
 	case 'j':
 		editor.board.SelectNextTask()
-		break
 	case 'k':
 		editor.board.SelectPreviousTask()
-		break
 	case 't':
 		editor.ChangeCurrentTaskStateFor(taskmanagement.Todo)
-		break
 	case 'i':
 		editor.ChangeCurrentTaskStateFor(taskmanagement.InProgress)
-		break
 	case 'c':
 		editor.ChangeCurrentTaskStateFor(taskmanagement.Completed)
-		break
-	default:
-		break
+	case 'R':
+		editor.ReloadBoard()
 	}
 }
 
@@ -238,28 +217,19 @@ func (editor *Editor) listenDeleteModeEvents(event termbox.Event) {
 	switch event.Ch {
 	case 'd':
 		editor.exec("delete task")
-		break
-	default:
-		break
 	}
 }
 
-func (editor *Editor) listenEvents() {
-	go func() {
-		for editor.running {
-			event := <-editor.termbox_event
+func (editor *Editor) ListenEvents(event termbox.Event) {
+	if editor.mode.IsNormal() {
+		editor.listenNormalModeEvents(event)
+	} else if editor.mode.IsCommand() {
+		editor.listenCommandModeEvents(event)
+	} else if editor.mode.IsDelete() {
+		editor.listenDeleteModeEvents(event)
+	}
 
-			if editor.mode.IsNormal() {
-				editor.listenNormalModeEvents(event)
-			} else if editor.mode.IsCommand() {
-				editor.listenCommandModeEvents(event)
-			} else if editor.mode.IsDelete() {
-				editor.listenDeleteModeEvents(event)
-			}
-
-			editor.commandInput.handleEvents(editor, event)
-		}
-	}()
+	editor.commandInput.handleEvents(editor, event)
 }
 
 func (editor *Editor) SetErrorMessage(message string) {
@@ -296,15 +266,15 @@ func (editor *Editor) exec(command string) {
 	switch cmd.Name {
 	case "quit", "q":
 		editor.Quit()
-		break
 	case "new task", "nt":
 		editor.addTask(cmd.Arguments)
-		break
 	case "delete task", "dt":
 		editor.deleteTask(cmd.Arguments)
-		break
+	case "w", "wa":
+		if !editor.setErrorMessageIfNNil(editor.repository.SaveBoard(editor.board)) {
+			editor.SetInfoMessage("Board saved successfully")
+		}
 	default:
 		editor.SetErrorMessage(fmt.Sprintf(`Unhandled command "%v"`, cmd.Name))
-		break
 	}
 }

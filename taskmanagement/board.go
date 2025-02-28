@@ -15,6 +15,11 @@ func CreateBoard() *Board {
 	}
 }
 
+func (b *Board) ResetState() {
+	b.task = nil
+	b.root = nil
+}
+
 func (board *Board) SetCustomTaskState(state TaskState) error {
 	if board.task == nil {
 		return errors.New("You have no selected task")

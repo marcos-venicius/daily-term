@@ -1,6 +1,16 @@
 package main
 
-import "github.com/marcos-venicius/daily-term/argumentparser"
+import (
+	"log"
+
+	"github.com/marcos-venicius/daily-term/argumentparser"
+)
+
+func printErrorIfExists(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func (editor *Editor) InitParser() {
 	newTaskArguments := []argumentparser.CommandArgumentSyntax{
@@ -19,14 +29,16 @@ func (editor *Editor) InitParser() {
 		},
 	}
 
-	editor.argumentParser.AddCommand("q")
-	editor.argumentParser.AddCommand("quit")
+	printErrorIfExists(editor.argumentParser.AddCommand("q"))
+	printErrorIfExists(editor.argumentParser.AddCommand("quit"))
+	printErrorIfExists(editor.argumentParser.AddCommand("w"))
+	printErrorIfExists(editor.argumentParser.AddCommand("wa"))
 
-	editor.argumentParser.AddCommand("nt", newTaskArguments...)
-	editor.argumentParser.AddCommand("new task", newTaskArguments...)
+	printErrorIfExists(editor.argumentParser.AddCommand("nt", newTaskArguments...))
+	printErrorIfExists(editor.argumentParser.AddCommand("new task", newTaskArguments...))
 
-	editor.argumentParser.AddCommand("dt", deletetaskArguments...)
-	editor.argumentParser.AddCommand("delete task", deletetaskArguments...)
+	printErrorIfExists(editor.argumentParser.AddCommand("dt", deletetaskArguments...))
+	printErrorIfExists(editor.argumentParser.AddCommand("delete task", deletetaskArguments...))
 
-	editor.argumentParser.Finish()
+	printErrorIfExists(editor.argumentParser.Finish())
 }
